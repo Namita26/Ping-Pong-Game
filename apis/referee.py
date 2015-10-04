@@ -1,5 +1,10 @@
-from flask import Flask
-from flask_restful import Resource, Api
+"""
+Referee API
+Date: 4 Oct, 2015
+"""
+
+from flask import Flask, request
+from flask_restful import Resource, Api, reqparse
 
 app = Flask(__name__)
 api = Api(app)
@@ -12,19 +17,23 @@ class Referee(Resource):
         return "Hiii"
 
 
-class Championship(Resource):
-    def join(self, id, name, set_length):
-        joined_players[id] = {}
-        joined_players[id]['player_name'] = name
-        joined_players[id]['defence_set_length'] = set_length
-        joined_players[id]['is_alive'] = 1
+parser = reqparse.RequestParser()
 
-    def is_shut_down(self, id, score):
-        if score != 5:
-            joined_players['id'] = 0
+
+class Registration(Resource):
+
+    def post(self):
+        id = request.form['id']
+        joined_players[id] = {}
+        joined_players[id]['player_name'] = request.form['name']
+        joined_players[id]['defence_set_length'] = request.form['length']
+        joined_players[id]['is_alive'] = 1
+        print joined_players
+
 
 api.add_resource(Referee, '/')
+api.add_resource(Registration, '/register')
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
