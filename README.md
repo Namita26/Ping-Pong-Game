@@ -64,7 +64,7 @@ set length
 8 Colwin 5 
 
 Steps to execute:
-1. cd Ping-Pong-Game/
-2. python apis/referee.py, this starts a flask app referee which contains api for registration/joining of players for the match
-3. python apis/player.py, this will take player's data from players_info.json and calls post request for registration. 
-4. After this, game will start between two randonmly generated players and winner's declared. 
+  1. cd Ping-Pong-Game/
+  2. python apis/referee.py, this starts a flask app referee which contains api for registration/joining of players   for the match
+  3. python apis/player.py, this will take player's data from players_info.json and calls post request for     registration. 
+  4. After this, game will start between two randonmly generated players and winner's declared. 
