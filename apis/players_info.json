@@ -1,34 +1,42 @@
-{
-    "1": {
+[
+    {
+        "id": 1,
         "name": "Joey",
         "length": 8
     },
-    "2": {
+    {
+        "id": 2,
         "name": "Nick",
         "length": 8
     },
-    "3": {
+    {
+        "id": 3,
         "name": "Russel",
         "length": 7
     },
-    "4": {
+    {
+        "id": 4,
         "name": "Vivek",
         "length": 7
     },
-    "5": {
+    {
+        "id": 5,
         "name": "Pritam",
         "length": 6
     },
-    "6": {
+    {
+        "id": 6,
         "name": "Amit",
         "length": 6
     },
-    "7": {
+    {
+        "id": 7,
         "name": "Chandler",
         "length": 5
     },
-    "8": {
+    {
+        "id": 8,
         "name": "Colwin",
         "length": 5
     }
-}
+]
