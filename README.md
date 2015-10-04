@@ -49,19 +49,18 @@ and the Player sub-application.
 Timeframe
 While there is no defined timeframe, it is expected that the time to
 complete the assignment would range between 4 and 8 hours.
-The Players
-Player # Player
-Name
-Defence
-set length
-1 Joey 8
-2 Nick 8
-3 Russel 7
-4 Vivek 7
-5 Pritam 6
-6 Amit 6
-7 Chandler 5
-8 Colwin 5 
+
+The Players: 
+
+  player#  Name     Defence set length
+  1        Joey     8
+  2        Nick     8
+  3        Russel   7
+  4        Vivek    7
+  5        Pritam   6
+  6        Amit     6
+  7        Chandler 5
+  8        Colwin   5 
 
 Steps to execute:
   1. cd Ping-Pong-Game/
