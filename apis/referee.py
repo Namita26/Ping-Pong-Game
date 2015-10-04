@@ -29,30 +29,27 @@ class Registration(Resource):
         joined_players[id]['player_name'] = request.form['name']
         joined_players[id]['defence_set_length'] = request.form['length']
         joined_players[id]['is_alive'] = 1
-        print joined_players
-        Match().start_game()
+        if len(joined_players) >= 8:
+            Match().start_game()
 
     def get(self):
         return joined_players
 
 
-class Match(Resource):
+MAIN_ARRAY = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+class Match():
     def __init__(self):
-        self.main_array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        self.matches_between = [(1, 2), (3, 4), (5, 6), (7, 8)]
+        self.matches_between = [('1', '2'), ('3', '4'), ('5', '6'), ('7', '8')]
 
     def start_game(self):
-        print "In start game"
-        player2 = [1, 2, 3, 4, 5, 6, 7, 8]
-        player1 = [10, 1, 4, 5, 9, 8, 7]
-        # player1 = Match._generate_random_array(
-        #     joined_players[self.matches_between[0][0]]["defence_set_length"])
-        # player2 = Match._generate_random_array(
-        #     joined_players[self.matches_between[0][1]]["defence_set_length"])
+        player1 = Match._generate_random_array(
+            joined_players[self.matches_between[0][0]]['defence_set_length'])
+        player2 = Match._generate_random_array(
+            joined_players[self.matches_between[0][1]]['defence_set_length'])
         Match().game(player1, player2)
 
     def game(self, player1, player2):
-        print "In game"
         offensive = "player1"
         player1_score = 0
         player2_score = 0
@@ -76,8 +73,9 @@ class Match(Resource):
         else:
             print "Player2", player2_score
 
-    def _generate_random_array(self, length):
-        return sample(self.main_array, length)
+    @staticmethod
+    def _generate_random_array(length):
+        return sample(MAIN_ARRAY, int(length))
 
 
 api.add_resource(Referee, '/')
