@@ -1,0 +1,6 @@
+BeautifulSoup==3.2.1
+Django==1.6.5
+Unidecode==0.04.16
+beautifulsoup4==4.3.2
+requests==2.3.0
+python==2.7
