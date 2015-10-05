@@ -4,17 +4,11 @@ Date: 4 Oct, 2015
 """
 
 from flask import Flask, request
-from flask_restful import Resource, Api, reqparse
+from flask_restful import Resource, Api
 from random import randint, sample
 
 app = Flask(__name__)
 api = Api(app)
-
-joined_players = {}
-winner_ids = []
-
-
-parser = reqparse.RequestParser()
 
 
 class Registration(Resource):
@@ -22,8 +16,7 @@ class Registration(Resource):
     Player Registration
     """
 
-    def __init__(self):
-        self.matches_between = [('1', '2'), ('3', '4'), ('5', '6'), ('7', '8')]
+    joined_players = {}
 
     def post(self):
         """
@@ -37,14 +30,28 @@ class Registration(Resource):
         }
         """
         p_id = request.form['id']
-        joined_players[p_id] = {}
-        joined_players[p_id]['player_name'] = request.form['name']
-        joined_players[p_id]['defence_set_length'] = request.form['length']
-        joined_players[p_id]['is_alive'] = 1
-        if len(joined_players) == 8:
-            self.commence()
+        Registration.joined_players[p_id] = {}
+        Registration.joined_players[p_id]['player_name'] = request.form['name']
+        Registration.joined_players[p_id]['defence_set_length'] = request.form['length']
+        Registration.joined_players[p_id]['is_alive'] = 1
+        if len(Registration.joined_players) == 8:
+            Match().commence(Registration.joined_players)
+            Registration.joined_players = {}
 
-    def commence(self):
+    def get(self):
+        return self.joined_players
+
+
+MAIN_ARRAY = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+
+class Match():
+
+    def __init__(self):
+        self.matches_between = [('1', '2'), ('3', '4'), ('5', '6'), ('7', '8')]
+        self.report = []
+
+    def commence(self, joined_players):
         """
         Start the game between players
         """
@@ -65,11 +72,11 @@ class Registration(Resource):
                 player2 = Match._generate_random_array(
                     joined_players[player2_id]['defence_set_length'])
                 round_winners.append(
-                    Match().game(player1, player2, player1_id, player2_id))
-        print winner_ids
+                    self.game(player1, player2, player1_id, player2_id))
         next_matches = []
 
         if len(round_winners) == 1:
+            Match._print_report(self.report)
             print "The Winner is ", round_winners[0]
             return
 
@@ -77,16 +84,7 @@ class Registration(Resource):
             next_matches.append((round_winners[j], round_winners[j+1]))
             self.matches_between = next_matches
 
-        self.commence()
-
-    def get(self):
-        return joined_players
-
-
-MAIN_ARRAY = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-
-
-class Match():
+        self.commence(joined_players)
 
     def game(self, player1, player2, player1_id, player2_id):
         """
@@ -115,10 +113,16 @@ class Match():
                 else:
                     player2_score = player2_score + 1
 
-        if player1_score > player2_score:
-            return player1_id
-        else:
-            return player2_id
+        winner = player1_id
+        if player1_score < player2_score:
+            winner = player2_id
+
+        self.report.append({
+            "players": [player1_id, player2_id],
+            "scores": [player1_score, player2_score],
+            "winner": winner
+        })
+        return winner
 
     @staticmethod
     def _generate_random_array(length):
@@ -128,6 +132,14 @@ class Match():
         :param length of the defence set array
         """
         return sample(MAIN_ARRAY, int(length))
+
+    @staticmethod
+    def _print_report(report):
+        for i in xrange(0, len(report)):
+            print "---------------------"
+            print "Match Number : ", i+1
+            print "Players : ", report[i]["players"]
+            print "Scores  : ", report[i]["scores"]
 
 
 api.add_resource(Registration, '/register')
