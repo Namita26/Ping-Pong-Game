@@ -4,35 +4,56 @@ Player API
 Date: 4 Oct, 2015
 """
 
-from flask import Flask
+from flask import Flask, request
 from flask_restful import Resource, Api
-import requests
 import json
+from random import randint, sample
 
 app = Flask(__name__)
 api = Api(app)
 
-joined_players = {}
+MAIN_ARRAY = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+players_info = {}
+
+with open("apis/players_info.json", "r") as f:
+    players_list = json.load(f)
+for i in players_list:
+    p_id = i['id']
+    players_info[p_id] = {}
+    players_info[p_id]['length'] = i['length']
 
 
 class Player(Resource):
     """
     Player methods
     """
-    def __init__(self, id, name, defence_length):
-        self.player_id = id
-        self.player_name = name
-        self.defence_set_length = defence_length
+    def get(self):
+        """
+        :param player_tuple is the tuple of player between whom the match
+        is fixed
+        sample player_tuple = (1, 2) means match is between 1 and 2
+        """
+        id = int(request.args.get("playerid"))
+        role = request.args.get("role")
+        if role == u'offensive':
+            return {"move": randint(1, 10)}
+        else:
+            return {"move": Player._generate_random_array(
+                players_info[id]["length"])}
 
-    def is_shut_down(self, id, score):
-        if score != 5:
-            joined_players['id'] = 0
+    @staticmethod
+    def _generate_random_array(length):
+        """
+        Generates array of input length containing random numbers ranged between
+        1-10
+        :param length of the defence set array
+        """
+        return sample(MAIN_ARRAY, int(length))
 
-api.add_resource(Player, '/')
+
+api.add_resource(Player, '/get_number/')
 
 
 if __name__ == "__main__":
-    with open("apis/players_info.json", "r") as f:
-        players_info = json.load(f)
-    for payload in players_info:
-        print requests.post("http://127.0.0.1:5001/register", data=payload)
+    app.run(debug=True, port=5000)
