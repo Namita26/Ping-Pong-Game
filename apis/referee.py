@@ -120,7 +120,7 @@ class Match():
         :player_type is role of the player like offensive or defencive
         """
         payload = {"playerid": player_id, "role": player_type}
-        output = requests.get("http://127.0.0.1:5000/get_number", params=payload)
+        output = requests.get("http://127.0.0.1:5000/moves", params=payload)
         move = output.json()['move']
         return move
 
