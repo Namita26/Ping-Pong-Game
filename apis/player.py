@@ -52,7 +52,7 @@ class Player(Resource):
         return sample(MAIN_ARRAY, int(length))
 
 
-api.add_resource(Player, '/get_number/')
+api.add_resource(Player, '/moves/')
 
 
 if __name__ == "__main__":
