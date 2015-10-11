@@ -65,5 +65,6 @@ The Players:
 Steps to execute:
   1. cd Ping-Pong-Game/
   2. python apis/referee.py, this starts a flask app referee which contains api for registration/joining of players   for the match
-  3. python apis/player.py, this will take player's data from players_info.json and calls post request for     registration. 
-  4. After this, game will start between two randonmly generated players and winner's declared. 
+  3. python apis/player.py, this will start players api
+  4. python apis/start.py, this will register the 8 players and start the game
+  5. After this, game will start between two randonmly generated players and winner's declared. 
