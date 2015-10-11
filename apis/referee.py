@@ -5,7 +5,8 @@ Date: 4 Oct, 2015
 
 from flask import Flask, request
 from flask_restful import Resource, Api
-from random import randint, sample
+import requests
+
 
 app = Flask(__name__)
 api = Api(app)
@@ -38,8 +39,9 @@ class Registration(Resource):
             Match().commence(Registration.joined_players)
             Registration.joined_players = {}
 
-    def get(self):
-        return self.joined_players
+    # def get(self):
+    #     print self.joined_players
+    #     return self.joined_players
 
 
 MAIN_ARRAY = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -67,17 +69,13 @@ class Match():
                 player1_id = players_tuple[0]
                 player2_id = players_tuple[1]
 
-                player1 = Match._generate_random_array(
-                    joined_players[player1_id]['defence_set_length'])
-                player2 = Match._generate_random_array(
-                    joined_players[player2_id]['defence_set_length'])
                 round_winners.append(
-                    self.game(player1, player2, player1_id, player2_id))
+                    self.game(player1_id, player2_id))
         next_matches = []
 
         if len(round_winners) == 1:
             Match._print_report(self.report)
-            print "The Winner is ", round_winners[0]
+            print "The Game Winner is ", round_winners[0]
             return
 
         for j in xrange(0, len(round_winners), 2):
@@ -86,52 +84,45 @@ class Match():
 
         self.commence(joined_players)
 
-    def game(self, player1, player2, player1_id, player2_id):
+    def game(self, player1_id, player2_id):
         """
         Game between two players
-        :param player1 is the defence set array of player1
-        :param player2 is the defence set array of player2
         :param player1_id is the id of player1
         :param player2_id is the id of player2
         :return ID of the winner
         """
-        offensive = "player1"
         player1_score = 0
         player2_score = 0
-        while(player1_score < 5 and player2_score < 5):
-            offence_number = randint(1, 10)
-            if offensive == "player1":
-                if offence_number in player2:
-                    player2_score = player2_score + 1
-                    offensive = "player2"
-                else:
-                    player1_score = player1_score + 1
-            else:
-                if offence_number in player1:
-                    player1_score = player1_score + 1
-                    offensive = "player1"
-                else:
-                    player2_score = player2_score + 1
+        player1_type = "offensive"
+        player2_type = "defencive"
 
-        winner = player1_id
+        while(player1_score < 5 and player2_score < 5):
+            player1_move = Match._get_move(player1_id, player1_type)
+            player2_move = Match._get_move(player2_id, player2_type)
+            player1_score, player1_type, player2_score, player2_type = compute_move_winner(player1_move, player1_type, player1_score, player2_move, player2_type, player2_score)
+
+        sub_game_winner_id = player1_id
         if player1_score < player2_score:
-            winner = player2_id
+            sub_game_winner_id = player2_id
 
         self.report.append({
             "players": [player1_id, player2_id],
             "scores": [player1_score, player2_score],
-            "winner": winner
+            "sub_game_winner": sub_game_winner_id
         })
-        return winner
+        return sub_game_winner_id
 
     @staticmethod
-    def _generate_random_array(length):
+    def _get_move(player_id, player_type):
         """
-        Generates array of input length containing random numbers ranged between
-        1-10
-        :param length of the defence set array
+        Offensive number or the defence array according to role
+        :param player_id is player's id
+        :player_type is role of the player like offensive or defencive
         """
-        return sample(MAIN_ARRAY, int(length))
+        payload = {"playerid": player_id, "role": player_type}
+        output = requests.get("http://127.0.0.1:5000/get_number", params=payload)
+        move = output.json()['move']
+        return move
 
     @staticmethod
     def _print_report(report):
@@ -140,6 +131,31 @@ class Match():
             print "Match Number : ", i+1
             print "Players : ", report[i]["players"]
             print "Scores  : ", report[i]["scores"]
+            print "winner  : ", report[i]["sub_game_winner"]
+
+
+def compute_move_winner(player1_move, player1_type, player1_score,
+                        player2_move, player2_type, player2_score):
+    """
+    :param player(x)_move is the offence_number or defence_array
+    :param player(x)_type is offensive or defencive
+    :param player(x)_score is player's scores
+    """
+    if player1_type == "offensive":
+        if player1_move in player2_move:
+            player2_score = player2_score + 1
+            player2_type = "offensive"
+            player1_type = "defensive"
+        else:
+            player1_score = player1_score + 1
+    else:
+        if player2_move in player1_move:
+            player1_score = player1_score + 1
+            player1_type = "offensive"
+            player2_type = "defensive"
+        else:
+            player2_score = player2_score + 1
+    return (player1_score, player1_type, player2_score, player2_type)
 
 
 api.add_resource(Registration, '/register')
